@@ -1,0 +1,6 @@
+{
+  "name": "TulisinAI Pro",
+  "description": "Platform AI Copywriting profesional untuk pebisnis online demi melipatgandakan penjualan menggunakan formula digital (AIDA, PAS) dan pratinjau simulasi media sosial.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "email": "edfall1985@gmail.com",
+    "name": "Pak Edi",
+    "status": "Premium",
+    "expiresAt": "2027-12-31"
+  },
+  {
+    "email": "demo@tulisinai.com",
+    "name": "User Demo",
+    "status": "Premium",
+    "expiresAt": "2026-12-31"
+  }
+]
