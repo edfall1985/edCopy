@@ -20,30 +20,37 @@ jobs:
         env:
           NODE_ENV: production
 
-      - name: Install SSH dependencies
-        run: sudo apt-get update && sudo apt-get install -y sshpass rsync
+      - name: Install rsync
+        run: sudo apt-get update && sudo apt-get install -y rsync
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.HOSTINGER_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p ${{ secrets.HOSTINGER_PORT || '65002' }} ${{ secrets.HOSTINGER_HOST }} >> ~/.ssh/known_hosts
 
       - name: Sync files to Hostinger
         run: |
-          SSHPASS="${{ secrets.HOSTINGER_PASSWORD }}"
           HOST="${{ secrets.HOSTINGER_HOST }}"
           PORT="${{ secrets.HOSTINGER_PORT || '65002' }}"
           USER="${{ secrets.HOSTINGER_USER }}"
           TARGET="~/domains/cw.digtri.com"
+          SSH_CMD="ssh -p $PORT $USER@$HOST"
+          RSYNC_CMD="rsync -avz --delete -e 'ssh -p $PORT'"
 
           # Ensure target dir exists
-          sshpass -p "$SSHPASS" ssh -o StrictHostKeyChecking=no -p $PORT $USER@$HOST "mkdir -p $TARGET/dist"
+          $SSH_CMD "mkdir -p $TARGET/dist"
 
           # Sync built assets
-          sshpass -p "$SSHPASS" rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no -p $PORT" ./dist/ $USER@$HOST:$TARGET/dist/
+          rsync -avz --delete -e "ssh -p $PORT" ./dist/ $USER@$HOST:$TARGET/dist/
 
           # Sync package files
-          sshpass -p "$SSHPASS" rsync -avz -e "ssh -o StrictHostKeyChecking=no -p $PORT" ./package.json ./package-lock.json $USER@$HOST:$TARGET/
+          rsync -avz -e "ssh -p $PORT" ./package.json ./package-lock.json $USER@$HOST:$TARGET/
 
       - name: Install deps, update env & restart
         run: |
-          sshpass -p "${{ secrets.HOSTINGER_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
-            -p ${{ secrets.HOSTINGER_PORT || '65002' }} \
+          ssh -p ${{ secrets.HOSTINGER_PORT || '65002' }} \
             ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} "
             cd ~/domains/cw.digtri.com
 
