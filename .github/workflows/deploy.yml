@@ -62,12 +62,6 @@ jobs:
             # Install production dependencies
             npm ci --production --ignore-scripts 2>/dev/null || npm install --production --ignore-scripts
 
-            # Write .env with latest secrets
-            cat > .env << 'ENVEOF'
-            GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
-            NODE_ENV=production
-            ENVEOF
-
             # Stop existing process if any
             lsof -ti:3000 2>/dev/null | xargs kill -9 2>/dev/null || true
             sleep 1
