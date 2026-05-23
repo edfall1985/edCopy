@@ -139,8 +139,6 @@ Dibuat otomatis oleh TulisinAI Pro.`;
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col h-full">
-<<<<<<< HEAD
-=======
       {response.isDemo && (
         <div className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-3 text-xs font-bold flex items-center gap-2 border-b border-amber-600/30">
           <span className="text-sm">⚠️</span>
@@ -149,7 +147,6 @@ Dibuat otomatis oleh TulisinAI Pro.`;
           </span>
         </div>
       )}
->>>>>>> 1113efc39ea21a25514ca16b9ad4c12b464f04be
       {/* Upper banner info */}
       <div className="bg-slate-900 text-slate-200 px-6 py-4.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>

@@ -8,14 +8,10 @@ import {
   Users, 
   CheckCircle2, 
   HelpCircle,
-<<<<<<< HEAD
-  FileText
-=======
   FileText,
   Key,
   ShieldAlert,
   UserCheck
->>>>>>> 1113efc39ea21a25514ca16b9ad4c12b464f04be
 } from "lucide-react";
 import Header from "./components/Header";
 import CopywritingForm from "./components/CopywritingForm";
@@ -42,8 +38,6 @@ export default function App() {
   // Saved bookmark status
   const [isSaved, setIsSaved] = useState(false);
 
-<<<<<<< HEAD
-=======
   // User Authentication & Licensing State
   const [userEmail, setUserEmail] = useState(() => {
     const saved = localStorage.getItem("tulisin_user_email");
@@ -101,7 +95,6 @@ export default function App() {
     localStorage.setItem("tulisin_user_email", val);
   };
 
->>>>>>> 1113efc39ea21a25514ca16b9ad4c12b464f04be
   // History list from localStorage representation
   const [history, setHistory] = useState<CopywritingHistoryItem[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -139,11 +132,7 @@ export default function App() {
         headers: {
           "Content-Type": "application/json",
         },
-<<<<<<< HEAD
-        body: JSON.stringify(formData),
-=======
         body: JSON.stringify({ ...formData, userEmail: userEmail }),
->>>>>>> 1113efc39ea21a25514ca16b9ad4c12b464f04be
       });
 
       if (!res.ok) {
@@ -285,9 +274,6 @@ export default function App() {
           
           {/* LEFT SIDE: Inputs form */}
           <div className="lg:col-span-5 h-full">
-<<<<<<< HEAD
-            <div className="sticky top-20">
-=======
             <div className="sticky top-20 space-y-5">
               
               {/* 🔑 PANEL LISENSI & HAK AKSES */}
@@ -350,7 +336,6 @@ export default function App() {
                 )}
               </div>
 
->>>>>>> 1113efc39ea21a25514ca16b9ad4c12b464f04be
               <CopywritingForm onSubmit={handleFormSubmit} isLoading={isLoading} />
             </div>
           </div>

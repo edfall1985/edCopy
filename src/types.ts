@@ -5,10 +5,7 @@ export interface CopywritingResponse {
   callToActions: string[];
   tags: string[];
   tips: string;
-<<<<<<< HEAD
-=======
   isDemo?: boolean;
->>>>>>> 1113efc39ea21a25514ca16b9ad4c12b464f04be
 }
 
 export interface CopywritingHistoryItem {
