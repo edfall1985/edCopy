@@ -49,6 +49,49 @@ export const PRODUCT_PRESETS: PresetProduct[] = [
   }
 ];
 
+export function getSimulationTemplate(
+  productName: string,
+  productDescription: string,
+  framework: string,
+  platform: string,
+  toneOfVoice: string
+): CopywritingResponse {
+  return {
+    isDemo: true,
+    headline: `🎁 [MODE SIMULASI DEMO] Solusi Hebat untuk Meningkatkan Penjualan ${productName || "Bisnis Anda"}!`,
+    hooks: [
+      `Ingin ${productName || "produk Anda"} dikenal luas? Ini rahasia persuasifnya!`,
+      `Kelebihan utama ${productName || "bisnis ini"} terletak pada solusinya yang tepat sasaran.`,
+      `Fakta mengejutkan: 90% pebisnis gagal menarik pembeli karena salah memilih Hook promosi!`
+    ],
+    mainCopy: `⚠️ MODE SIMULASI DEMO AKTIF
+(Sandi/Lisensi Anda belum terdaftar di database Premium TulisinAI Pro)
+
+Berikut adalah simulasi naskah copywriting profesional yang disusun menggunakan formula ${framework} dan disesuaikan untuk platform ${platform} dengan nada bahasa ${toneOfVoice}:
+
+[ATTENTION - MENCOLOK PERHATIAN]
+Bagi Anda yang sedang merintis atau mengelola "${productName || "sebuah brand online"}", Anda pasti tahu betapa sulitnya bersaing memperebutkan perhatian pembeli di era digital ini. 
+
+[INTEREST - MEMBANGKITKAN MINAT]
+Manfaat utama dari produk Anda dideskripsikan sebagai: 
+"${productDescription || "Produk berkualitas tinggi berdaya saing luar biasa."}"
+Setiap kalimat di atas memiliki potensi omzet melimpah jika dikemas ke dalam bahasa hipnotik yang menyentuh masalah dan hasrat emosional terdalam calon konsumen.
+
+[DESIRE - MEMANCING HASRAT EMOSIONAL]
+Formula ${framework} membantu menstrukturkan kelebihan tersebut menjadi langkah logis: menanamkan urgensi, mematahkan keraguan, dan memberikan alasan mutlak mengapa mereka harus memesan dari Anda hari ini juga, bukan dari kompetitor sebelah!
+
+[ACTION - PANGGILAN BERTINDAK SEGERA]
+Untuk membuka fitur kecerdasan buatan Gemini asli secara tak terbatas dalam menyusun ribuan variasi tulisan ciamik, silakan masukkan Sandi Lisensi yang terdaftar di database premium pada panel kiri!`,
+    callToActions: [
+      `🛒 [DEMO] Klik ke Admin untuk Aktivasi Premium`,
+      `👉 Dapatkan Template Naskah Lengkap & Original`,
+      `📞 Hubungi Tim Registrasi TulisinAI`
+    ],
+    tags: ["#TulisinAIDemo", "#SolusiCopywriting", "#BebasMencoba", "#ScaleUpBisnis"],
+    tips: `💡 [TIPS PREMIUM] Lisensi Premium terdaftar akan memanggil API kecerdasan buatan Gemini 3.5 secara langsung, menghasilkan copywriting unik 100% bebas plagiasi, rapi dengan penempatan emoji otomatis secara cerdas.`
+  };
+}
+
 export function downloadFile(content: string, filename: string, mimeType: string) {
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);

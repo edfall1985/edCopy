@@ -1,12 +1,12 @@
 [
   {
-    "email": "edfall1985@gmail.com",
+    "password": "7323807",
     "name": "Pak Edi",
     "status": "Premium",
     "expiresAt": "2027-12-31"
   },
   {
-    "email": "demo@tulisinai.com",
+    "password": "demo",
     "name": "User Demo",
     "status": "Premium",
     "expiresAt": "2026-12-31"

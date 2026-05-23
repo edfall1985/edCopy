@@ -1,5 +1,17 @@
 # 🔄 Panduan Sinkronisasi Proyek via GitHub ke Localhost XAMPP (`edcopy`)
 
+## ⚡ RECOVERY CEPAT: KLONING BARU DARI AWAL (FOLDER KOSONG)
+Jika Anda ingin mengambil ulang seluruh isi repository GitHub ke dalam folder `C:\xampp\htdocs\edCopy` yang sudah kosong, silakan buka Terminal/CMD/PowerShell lalu **salin dan jalankan perintah utuh ini**:
+
+```bash
+cd C:\xampp\htdocs
+git clone https://github.com/edfall1985/edCopy.git edCopy
+cd edCopy
+npm install
+```
+
+---
+
 Dokumen ini memuat langkah-langkah lengkap untuk mengunggah kode Anda dari AI Studio ke penampung online **GitHub**, lalu mengambil dan menyinkronkannya (sync) secara realtime ke direktori XAMPP lokal (`C:\xampp\htdocs\edcopy`) menggunakan Terminal atau Command Prompt (CMD).
 
 Dengan metode ini, Anda dapat memperbarui aplikasi Anda di lokal secara instan setiap kali ada perubahan pada repositori GitHub Anda.

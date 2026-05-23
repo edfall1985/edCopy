@@ -20,12 +20,13 @@ async function startServer() {
   }
 
   // Initialize Gemini API client lazily/safely
-  const getGeminiClient = () => {
-    if (!process.env.GEMINI_API_KEY) {
-      throw new Error("Kunci API Gemini (GEMINI_API_KEY) belum dikonfigurasi. Silakan masuk ke Menu Pengaturan > Secrets untuk menyiapkannya.");
+  const getGeminiClient = (customApiKey?: string) => {
+    const keyToUse = customApiKey || process.env.GEMINI_API_KEY;
+    if (!keyToUse) {
+      throw new Error("Kunci API Gemini (GEMINI_API_KEY) belum dikonfigurasi. Silakan hubungi admin atau masukkan Kunci API Anda sendiri di panel kiri.");
     }
     return new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY,
+      apiKey: keyToUse,
       httpOptions: {
         headers: {
           'User-Agent': 'aistudio-build',
@@ -34,8 +35,8 @@ async function startServer() {
     });
   };
 
-  // Check if email is in users.json whitelist
-  const checkEmailAccess = async (email: string) => {
+  // Check if password/license key is in users.json
+  const checkPasswordAccess = async (password: string) => {
     try {
       const usersFilePath = path.join(process.cwd(), "users.json");
       if (!fs.existsSync(usersFilePath)) {
@@ -43,7 +44,10 @@ async function startServer() {
       }
       const data = await fs.promises.readFile(usersFilePath, "utf-8");
       const users = JSON.parse(data);
-      const user = users.find((u: any) => u.email && u.email.trim().toLowerCase() === email.trim().toLowerCase());
+      if (!password || !password.trim()) {
+        return { isRegistered: false, name: "", status: "Free" };
+      }
+      const user = users.find((u: any) => u.password && u.password.trim() === password.trim());
       if (user) {
         return { isRegistered: true, name: user.name, status: user.status || "Premium" };
       }
@@ -70,7 +74,7 @@ async function startServer() {
         `Fakta mengejutkan: 90% pebisnis gagal menarik pembeli karena salah memilih Hook promosi!`
       ],
       mainCopy: `⚠️ MODE SIMULASI DEMO AKTIF
-(Email/Lisensi ini belum terdaftar di database Premium TulisinAI Pro)
+(Sandi/Lisensi Anda belum terdaftar di database Premium TulisinAI Pro)
 
 Berikut adalah simulasi naskah copywriting profesional yang disusun menggunakan formula ${framework} dan disesuaikan untuk platform ${platform} dengan nada bahasa ${toneOfVoice}:
 
@@ -86,24 +90,24 @@ Setiap kalimat di atas memiliki potensi omzet melimpah jika dikemas ke dalam bah
 Formula ${framework} membantu menstrukturkan kelebihan tersebut menjadi langkah logis: menanamkan urgensi, mematahkan keraguan, dan memberikan alasan mutlak mengapa mereka harus memesan dari Anda hari ini juga, bukan dari kompetitor sebelah!
 
 [ACTION - PANGGILAN BERTINDAK SEGERA]
-Untuk membuka fitur kecerdasan buatan Gemini asli secara tak terbatas dalam menyusun ribuan variasi tulisan ciamik, daftarkan email Anda ke database admin untuk menaikkan level keanggotaan menjadi PREMIUM!`,
+Untuk membuka fitur kecerdasan buatan Gemini asli secara tak terbatas dalam menyusun ribuan variasi tulisan ciamik, silakan masukkan Sandi Lisensi yang terdaftar di database premium pada panel kiri!`,
       callToActions: [
         `🛒 [DEMO] Klik ke Admin untuk Aktivasi Premium`,
         `👉 Dapatkan Template Naskah Lengkap & Original`,
         `📞 Hubungi Tim Registrasi TulisinAI`
       ],
       tags: ["#TulisinAIDemo", "#SolusiCopywriting", "#BebasMencoba", "#ScaleUpBisnis"],
-      tips: `💡 [TIPS PREMIUM] Akun Premium terdaftar akan memanggil API kecerdasan buatan Gemini 3.5 secara langsung, menghasilkan copywriting unik 100% bebas plagiasi, rapi dengan penempatan emoji otomatis secara cerdas.`
+      tips: `💡 [TIPS PREMIUM] Lisensi Premium terdaftar akan memanggil API kecerdasan buatan Gemini 3.5 secara langsung, menghasilkan copywriting unik 100% bebas plagiasi, rapi dengan penempatan emoji otomatis secara cerdas.`
     };
   };
 
   // API endpoint checking registration
   app.post("/api/check-user", async (req, res) => {
-    const { email } = req.body;
-    if (!email) {
+    const { password } = req.body;
+    if (!password) {
       return res.json({ isRegistered: false, status: "Free", name: "" });
     }
-    const check = await checkEmailAccess(email);
+    const check = await checkPasswordAccess(password);
     res.json(check);
   });
 
@@ -118,7 +122,8 @@ Untuk membuka fitur kecerdasan buatan Gemini asli secara tak terbatas dalam meny
         framework,
         platform,
         extraInstructions,
-        userEmail
+        password,
+        customApiKey
       } = req.body;
 
       if (!productName || !productDescription) {
@@ -126,9 +131,10 @@ Untuk membuka fitur kecerdasan buatan Gemini asli secara tak terbatas dalam meny
       }
 
       // Check access permission
-      const access = await checkEmailAccess(userEmail || "");
+      const access = await checkPasswordAccess(password || "");
+      const hasCustomApiKey = customApiKey && typeof customApiKey === "string" && customApiKey.trim().length > 10;
       
-      if (!access.isRegistered) {
+      if (!access.isRegistered && !hasCustomApiKey) {
         // Return Simulation template as requested
         const demoResult = getSimulationTemplate(
           productName,
@@ -140,7 +146,7 @@ Untuk membuka fitur kecerdasan buatan Gemini asli secara tak terbatas dalam meny
         return res.json(demoResult);
       }
 
-      const ai = getGeminiClient();
+      const ai = getGeminiClient(customApiKey);
 
       const systemInstruction = 
         `Anda adalah seorang Copywriter Elit dan Ahli Digital Marketing Indonesia dengan pengalaman lebih dari 10 tahun dalam menaikkan konversi penjualan bisnis online.\n` +

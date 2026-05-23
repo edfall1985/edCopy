@@ -19,7 +19,8 @@ import {
   ChevronDown,
   Trash2,
   RotateCcw,
-  Heading
+  Heading,
+  ArrowLeft
 } from "lucide-react";
 import { CopywritingResponse } from "../types";
 import { downloadFile, generateMarkdownContent } from "../utils";
@@ -31,6 +32,7 @@ interface ResultDisplayProps {
   response: CopywritingResponse;
   onSaveToHistory: () => void;
   isSaved: boolean;
+  onBackToForm: () => void;
 }
 
 export default function ResultDisplay({
@@ -40,6 +42,7 @@ export default function ResultDisplay({
   response,
   onSaveToHistory,
   isSaved,
+  onBackToForm,
 }: ResultDisplayProps) {
   const [activeTab, setActiveTab] = useState<"naskah" | "visual" | "tips">("naskah");
   const [isCopied, setIsCopied] = useState(false);
@@ -158,10 +161,19 @@ Dibuat otomatis oleh TulisinAI Pro.`;
           </h2>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
+          {/* Back to Form Custom Action */}
+          <button
+            onClick={onBackToForm}
+            className="flex-1 sm:flex-initial py-2.5 px-4 text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-slate-750 text-slate-200 hover:text-white border border-slate-700 transition-all cursor-pointer active:scale-95"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Buat Baru / Edit Form</span>
+          </button>
+
           {/* Bookmark / Save to database indicator */}
           <button
             onClick={onSaveToHistory}
-            className={`flex-1 sm:flex-initial py-2 px-3.5 text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+            className={`flex-1 sm:flex-initial py-2.5 px-4 text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
               isSaved
                 ? "bg-slate-800 text-slate-300 border border-slate-750 cursor-default"
                 : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-900/10 active:scale-95"
