@@ -9,7 +9,7 @@ dotenv.config();
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = process.env.PORT || 3000;
 
   app.use(express.json());
 
@@ -165,7 +165,7 @@ Untuk membuka fitur kecerdasan buatan Gemini asli secara tak terbatas dalam meny
         `PENTING: Terapkan formula ${framework} dengan struktur penulisan yang sangat baik dan mudah dibaca (gunakan line-break dan bullet points). Sertakan Call To Action (CTA) paling memikat pada bagian utama juga.`;
 
       const response = await ai.models.generateContent({
-        model: "gemini-3.5-flash",
+        model: "gemini-2.0-flash",
         contents: prompt,
         config: {
           systemInstruction: systemInstruction,
@@ -225,7 +225,8 @@ Untuk membuka fitur kecerdasan buatan Gemini asli secara tak terbatas dalam meny
   });
 
   // Serve static UI or load Vite dev server
-  if (process.env.NODE_ENV !== "production") {
+  const isProduction = process.env.NODE_ENV === "production" || process.env.APP_ENV === "production";
+  if (!isProduction) {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",

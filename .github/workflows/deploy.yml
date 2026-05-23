@@ -1,0 +1,79 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Install SSH dependencies
+        run: sudo apt-get update && sudo apt-get install -y sshpass rsync
+
+      - name: Sync files to Hostinger
+        run: |
+          SSHPASS="${{ secrets.HOSTINGER_PASSWORD }}"
+          HOST="${{ secrets.HOSTINGER_HOST }}"
+          PORT="${{ secrets.HOSTINGER_PORT || '65002' }}"
+          USER="${{ secrets.HOSTINGER_USER }}"
+          TARGET="~/domains/cw.digtri.com"
+
+          # Ensure target dir exists
+          sshpass -p "$SSHPASS" ssh -o StrictHostKeyChecking=no -p $PORT $USER@$HOST "mkdir -p $TARGET/dist"
+
+          # Sync built assets
+          sshpass -p "$SSHPASS" rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no -p $PORT" ./dist/ $USER@$HOST:$TARGET/dist/
+
+          # Sync package files
+          sshpass -p "$SSHPASS" rsync -avz -e "ssh -o StrictHostKeyChecking=no -p $PORT" ./package.json ./package-lock.json $USER@$HOST:$TARGET/
+
+      - name: Install deps, update env & restart
+        run: |
+          sshpass -p "${{ secrets.HOSTINGER_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
+            -p ${{ secrets.HOSTINGER_PORT || '65002' }} \
+            ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} "
+            cd ~/domains/cw.digtri.com
+
+            # Use correct Node.js version
+            export NVM_DIR=\"\$HOME/.nvm\"
+            [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\"
+            node -v
+
+            # Install production dependencies
+            npm ci --production --ignore-scripts 2>/dev/null || npm install --production --ignore-scripts
+
+            # Write .env with latest secrets
+            cat > .env << 'ENVEOF'
+            GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+            NODE_ENV=production
+            ENVEOF
+
+            # Stop existing process if any
+            lsof -ti:3000 2>/dev/null | xargs kill -9 2>/dev/null || true
+            sleep 1
+
+            # Start new process
+            nohup node dist/server.cjs > server.log 2>&1 &
+            sleep 2
+
+            # Verify it's running
+            if lsof -ti:3000 >/dev/null 2>&1; then
+              echo '✅ Server started successfully'
+            else
+              echo '⚠️ Server may not have started. Check server.log'
+              tail -20 server.log
+            fi
+          "
